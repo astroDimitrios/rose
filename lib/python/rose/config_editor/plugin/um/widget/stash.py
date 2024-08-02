@@ -21,10 +21,10 @@
 import ast
 import os
 
-import pango
-import pygtk
-pygtk.require("2.0")
-import gtk
+from gi.repository import Pango
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk
 
 import rose.config
 import rose.config_editor.panelwidget.summary_data
@@ -130,8 +130,8 @@ class BaseStashSummaryDataPanelv1(
         """(Override) Add a cell renderer type based on the column."""
         self._update_available_profiles()
         if col_title in self.OPTION_NL_MAP:
-            cell_for_value = gtk.CellRendererCombo()
-            listmodel = gtk.ListStore(str)
+            cell_for_value = Gtk.CellRendererCombo()
+            listmodel = Gtk.ListStore(str)
             values = sorted(self._available_profile_map[col_title])
             for possible_value in values:
                 listmodel.append([possible_value])
@@ -148,20 +148,20 @@ class BaseStashSummaryDataPanelv1(
                 cell_for_value.connect("edited",
                                        self._handle_cell_combo_change,
                                        col_title)
-            col.pack_start(cell_for_value, expand=True)
+            col.pack_start(cell_for_value, True, True, 0)
             col.set_cell_data_func(cell_for_value,
                                    self._set_tree_cell_value_combo)
         elif col_title == self.INCLUDED_TITLE:
-            cell_for_value = gtk.CellRendererToggle()
-            col.pack_start(cell_for_value, expand=False)
+            cell_for_value = Gtk.CellRendererToggle()
+            col.pack_start(cell_for_value, False, True, 0)
             cell_for_value.set_property("activatable", True)
             cell_for_value.connect("toggled",
                                    self._handle_cell_toggle_change)
             col.set_cell_data_func(cell_for_value,
                                    self._set_tree_cell_value_toggle)
         else:
-            cell_for_value = gtk.CellRendererText()
-            col.pack_start(cell_for_value, expand=True)
+            cell_for_value = Gtk.CellRendererText()
+            col.pack_start(cell_for_value, True, True, 0)
             if (col_title not in [self.SECTION_INDEX_TITLE,
                                   self.DESCRIPTION_TITLE]):
                 cell_for_value.set_property("editable", True)
@@ -407,7 +407,7 @@ class BaseStashSummaryDataPanelv1(
             metadata = self._stashmaster_meta_lookup.get(meta_key, {})
             help_ = metadata.get(rose.META_PROP_HELP)
             if help_ is not None:
-                menuitem = gtk.ImageMenuItem(stock_id=gtk.STOCK_HELP)
+                menuitem = Gtk.ImageMenuItem(stock_id=Gtk.STOCK_HELP)
                 menuitem.set_label(label="Help")
                 menuitem._help_text = help_
                 menuitem._help_title = "Help for %s" % value
@@ -418,7 +418,7 @@ class BaseStashSummaryDataPanelv1(
         if value not in self._profile_location_map[col_title]:
             return []
         location = self._profile_location_map[col_title][value]
-        menuitem = gtk.ImageMenuItem(stock_id=gtk.STOCK_ABOUT)
+        menuitem = Gtk.ImageMenuItem(stock_id=Gtk.STOCK_ABOUT)
         menuitem.set_label(label="View " + value.strip("'"))
         menuitem._loc_id = location
         menuitem.connect("activate",
@@ -428,17 +428,17 @@ class BaseStashSummaryDataPanelv1(
         profiles_menuitems = []
         for profile in self._available_profile_map[col_title]:
             label = "View " + profile.strip("'")
-            menuitem = gtk.MenuItem(label=label)
+            menuitem = Gtk.MenuItem(label=label)
             menuitem._loc_id = self._profile_location_map[col_title][profile]
             menuitem.connect("button-release-event",
                              lambda i, e: self.search_function(i._loc_id))
             menuitem.show()
             profiles_menuitems.append(menuitem)
         if profiles_menuitems:
-            profiles_menu = gtk.Menu()
+            profiles_menu = Gtk.Menu()
             profiles_menu.show()
-            profiles_root_menuitem = gtk.ImageMenuItem(
-                stock_id=gtk.STOCK_ABOUT)
+            profiles_root_menuitem = Gtk.ImageMenuItem(
+                stock_id=Gtk.STOCK_ABOUT)
             profiles_root_menuitem.set_label("View...")
             profiles_root_menuitem.show()
             profiles_root_menuitem.set_submenu(profiles_menu)
@@ -507,7 +507,7 @@ class BaseStashSummaryDataPanelv1(
         # Create a button for launching the "Add new STASH" dialog.
         self._add_button = rose.gtk.util.CustomButton(
             label=self.ADD_NEW_STASH_LABEL,
-            stock_id=gtk.STOCK_ADD,
+            stock_id=Gtk.STOCK_ADD,
             tip_text=self.ADD_NEW_STASH_TIP)
         package_button = rose.gtk.util.CustomButton(
             label=self.PACKAGE_MANAGER_LABEL,
@@ -547,7 +547,7 @@ class BaseStashSummaryDataPanelv1(
 
     def _handle_cell_combo_change(self, combo_cell, path_string, new,
                                   col_title):
-        # Handle a gtk.CellRendererCombo (variable) value change.
+        # Handle a Gtk.CellRendererCombo (variable) value change.
         if isinstance(new, str):
             new_value = new
         else:
@@ -563,7 +563,7 @@ class BaseStashSummaryDataPanelv1(
 
     def _handle_cell_text_change(self, text_cell, path_string, new_text,
                                  col_title):
-        # Handle a gtk.CellRendererText (variable) value change.
+        # Handle a Gtk.CellRendererText (variable) value change.
         row_iter = self._view.get_model().get_iter(path_string)
         sect_index = self.get_section_column_index()
         section = self._view.get_model().get_value(row_iter, sect_index)
@@ -574,7 +574,7 @@ class BaseStashSummaryDataPanelv1(
         return False
 
     def _handle_cell_toggle_change(self, combo_cell, path_string):
-        # Handle a gtk.CellRendererToggle value change.
+        # Handle a Gtk.CellRendererToggle value change.
         was_active = combo_cell.get_property("active")
         row_iter = self._view.get_model().get_iter(path_string)
         sect_index = self.get_section_column_index()
@@ -624,7 +624,7 @@ class BaseStashSummaryDataPanelv1(
 
     def _launch_new_diagnostic_window(self, widget=None):
         # Launch the "new STASH request" dialog.
-        window = gtk.Window()
+        window = Gtk.Window()
         window.set_title(self.ADD_NEW_STASH_WINDOW_TITLE)
         request_lookup = self._get_request_lookup()
         request_changes = self._get_request_changes()
@@ -698,7 +698,7 @@ class BaseStashSummaryDataPanelv1(
         max_len = rose.config_editor.SUMMARY_DATA_PANEL_MAX_LEN
         if value is not None and len(value) > max_len and col_index != 0:
             cell.set_property("width-chars", max_len)
-            cell.set_property("ellipsize", pango.ELLIPSIZE_END)
+            cell.set_property("ellipsize", Pango.EllipsizeMode.END)
         sect_index = self.get_section_column_index()
         if value is not None and col_index == sect_index and self.is_duplicate:
             value = value.split("(")[-1].rstrip(")")
@@ -749,7 +749,7 @@ class BaseStashSummaryDataPanelv1(
 
     def _package_menu_launch(self, widget, event):
         # Create a menu below the widget for package actions.
-        menu = gtk.Menu()
+        menu = Gtk.Menu()
         packages = {}
         for section, vars_ in list(self.variables.items()):
             for var in vars_:
@@ -761,10 +761,10 @@ class BaseStashSummaryDataPanelv1(
         for package in sorted(packages.keys()):
             ignored_list = packages[package]
             package_title = "Package: " + package
-            package_menuitem = gtk.MenuItem(package_title)
+            package_menuitem = Gtk.MenuItem(package_title)
             package_menuitem.show()
-            package_menu = gtk.Menu()
-            enable_menuitem = gtk.ImageMenuItem(stock_id=gtk.STOCK_YES)
+            package_menu = Gtk.Menu()
+            enable_menuitem = Gtk.ImageMenuItem(stock_id=Gtk.STOCK_YES)
             enable_menuitem.set_label(label="Enable all")
             enable_menuitem._connect_args = (package, False)
             enable_menuitem.connect(
@@ -773,7 +773,7 @@ class BaseStashSummaryDataPanelv1(
             enable_menuitem.show()
             enable_menuitem.set_sensitive(any(ignored_list))
             package_menu.append(enable_menuitem)
-            ignore_menuitem = gtk.ImageMenuItem(stock_id=gtk.STOCK_NO)
+            ignore_menuitem = Gtk.ImageMenuItem(stock_id=Gtk.STOCK_NO)
             ignore_menuitem.set_label(label="Ignore all")
             ignore_menuitem._connect_args = (package, True)
             ignore_menuitem.connect(
@@ -782,7 +782,7 @@ class BaseStashSummaryDataPanelv1(
             ignore_menuitem.set_sensitive(any(not i for i in ignored_list))
             ignore_menuitem.show()
             package_menu.append(ignore_menuitem)
-            remove_menuitem = gtk.ImageMenuItem(stock_id=gtk.STOCK_REMOVE)
+            remove_menuitem = Gtk.ImageMenuItem(stock_id=Gtk.STOCK_REMOVE)
             remove_menuitem.set_label(label="Remove all")
             remove_menuitem._connect_args = (package,)
             remove_menuitem.connect(
@@ -792,12 +792,12 @@ class BaseStashSummaryDataPanelv1(
             package_menu.append(remove_menuitem)
             package_menuitem.set_submenu(package_menu)
             menu.append(package_menuitem)
-        menuitem = gtk.ImageMenuItem(stock_id=gtk.STOCK_ADD)
+        menuitem = Gtk.ImageMenuItem(stock_id=Gtk.STOCK_ADD)
         menuitem.set_label(label="Import")
-        import_menu = gtk.Menu()
+        import_menu = Gtk.Menu()
         new_packages = set(self._package_lookup.keys()) - set(packages.keys())
         for new_package in sorted(new_packages):
-            new_pack_menuitem = gtk.MenuItem(label=new_package)
+            new_pack_menuitem = Gtk.MenuItem(label=new_package)
             new_pack_menuitem._connect_args = (new_package,)
             new_pack_menuitem.connect(
                 "button-release-event",
@@ -809,7 +809,7 @@ class BaseStashSummaryDataPanelv1(
         menuitem.set_submenu(import_menu)
         menuitem.show()
         menu.append(menuitem)
-        menuitem = gtk.ImageMenuItem(stock_id=gtk.STOCK_NO)
+        menuitem = Gtk.ImageMenuItem(stock_id=Gtk.STOCK_NO)
         menuitem.set_label(label="Disable all packages")
         menuitem.connect("activate",
                          lambda i: self._packages_enable(disable=True))

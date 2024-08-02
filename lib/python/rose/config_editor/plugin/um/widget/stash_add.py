@@ -18,10 +18,10 @@
 # along with Rose. If not, see <http://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-import pango
-import pygtk
-pygtk.require("2.0")
-import gtk
+from gi.repository import Pango
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk
 
 import rose.config
 import rose.config_editor
@@ -30,7 +30,7 @@ import rose.gtk.util
 import rose.config_editor.plugin.um.widget.stash_util as stash_util
 
 
-class AddStashDiagnosticsPanelv1(gtk.VBox):
+class AddStashDiagnosticsPanelv1(Gtk.VBox):
 
     """Display a grouped set of stash requests to add."""
 
@@ -115,8 +115,8 @@ class AddStashDiagnosticsPanelv1(gtk.VBox):
         self._view.connect("button-press-event",
                            self._handle_button_press_event)
         self._view.connect("cursor-changed", self._update_control_sensitivity)
-        self._window = gtk.ScrolledWindow()
-        self._window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self._window = Gtk.ScrolledWindow()
+        self._window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
         self.generate_tree_view(is_startup=True)
         self._window.add(self._view)
         self._window.show()
@@ -126,8 +126,8 @@ class AddStashDiagnosticsPanelv1(gtk.VBox):
 
     def add_cell_renderer_for_value(self, column):
         """Add a cell renderer to represent the model value."""
-        cell_for_value = gtk.CellRendererText()
-        column.pack_start(cell_for_value, expand=True)
+        cell_for_value = Gtk.CellRendererText()
+        column.pack_start(cell_for_value, True, True, 0)
         column.set_cell_data_func(cell_for_value,
                                   self._set_tree_cell_value)
 
@@ -142,7 +142,7 @@ class AddStashDiagnosticsPanelv1(gtk.VBox):
             self._view.remove_column(column)
         self._view.set_model(self.get_tree_model())
         for i, column_name in enumerate(self.column_names):
-            col = gtk.TreeViewColumn()
+            col = Gtk.TreeViewColumn()
             if column_name in self._hidden_column_names:
                 col.set_visible(False)
             col_title = column_name.replace("_", "__")
@@ -158,7 +158,7 @@ class AddStashDiagnosticsPanelv1(gtk.VBox):
             col.set_sort_column_id(i)
             self._view.append_column(col)
         if is_startup:
-            group_model = gtk.TreeStore(str)
+            group_model = Gtk.TreeStore(str)
             group_model.append(None, [""])
             for i, name in enumerate(self.column_names):
                 if name not in ["?", "#"]:
@@ -203,7 +203,7 @@ class AddStashDiagnosticsPanelv1(gtk.VBox):
             col_types = [str] * len(data_rows[0])
         else:
             col_types = []
-        self._store = gtk.TreeStore(*col_types)
+        self._store = Gtk.TreeStore(*col_types)
         parent_iter = None
         for i, row_data in enumerate(data_rows):
             if rows_are_descendants is None:
@@ -216,7 +216,7 @@ class AddStashDiagnosticsPanelv1(gtk.VBox):
                 self._store.append(parent_iter, row_data)
         filter_model = self._store.filter_new()
         filter_model.set_visible_func(self._filter_visible)
-        sort_model = gtk.TreeModelSort(filter_model)
+        sort_model = Gtk.TreeModelSort(filter_model)
         for i in range(len(self.column_names)):
             sort_model.set_sort_func(i, self.sort_util.sort_column, i)
         sort_model.connect("sort-column-changed",
@@ -226,11 +226,11 @@ class AddStashDiagnosticsPanelv1(gtk.VBox):
     def set_tree_tip(self, treeview, row_iter, col_index, tip):
         """Add the hover-over text for a cell to 'tip'.
 
-        treeview is the gtk.TreeView object
-        row_iter is the gtk.TreeIter for the row
-        col_index is the index of the gtk.TreeColumn in
+        treeview is the Gtk.TreeView object
+        row_iter is the Gtk.TreeIter for the row
+        col_index is the index of the Gtk.TreeColumn in
         e.g. treeview.get_columns()
-        tip is the gtk.Tooltip object that the text needs to be set in.
+        tip is the Gtk.Tooltip object that the text needs to be set in.
 
         """
         model = treeview.get_model()
@@ -398,26 +398,26 @@ class AddStashDiagnosticsPanelv1(gtk.VBox):
 
     def _get_control_widget_hbox(self):
         # Build the control widgets for the dialog.
-        filter_label = gtk.Label(
+        filter_label = Gtk.Label(label=
             rose.config_editor.SUMMARY_DATA_PANEL_FILTER_LABEL)
         filter_label.show()
-        self._filter_widget = gtk.Entry()
+        self._filter_widget = Gtk.Entry()
         self._filter_widget.set_width_chars(
             rose.config_editor.SUMMARY_DATA_PANEL_FILTER_MAX_CHAR)
         self._filter_widget.connect("changed", self._filter_refresh)
         self._filter_widget.set_tooltip_text("Filter by literal values")
         self._filter_widget.show()
-        group_label = gtk.Label(
+        group_label = Gtk.Label(label=
             rose.config_editor.SUMMARY_DATA_PANEL_GROUP_LABEL)
         group_label.show()
-        self._group_widget = gtk.ComboBox()
-        cell = gtk.CellRendererText()
-        self._group_widget.pack_start(cell, expand=True)
+        self._group_widget = Gtk.ComboBox()
+        cell = Gtk.CellRendererText()
+        self._group_widget.pack_start(cell, True, True, 0)
         self._group_widget.add_attribute(cell, 'text', 0)
         self._group_widget.show()
         self._add_button = rose.gtk.util.CustomButton(
             label="Add",
-            stock_id=gtk.STOCK_ADD,
+            stock_id=Gtk.STOCK_ADD,
             tip_text="Add a new request for this entry")
         self._add_button.connect("activate",
                                  lambda b: self._handle_add_current_row())
@@ -425,7 +425,7 @@ class AddStashDiagnosticsPanelv1(gtk.VBox):
                                  lambda b: self._handle_add_current_row())
         self._refresh_button = rose.gtk.util.CustomButton(
             label="Refresh",
-            stock_id=gtk.STOCK_REFRESH,
+            stock_id=Gtk.STOCK_REFRESH,
             tip_text="Refresh namelist:streq statuses")
         self._refresh_button.connect("activate",
                                      lambda b: self.refresh_stash_requests())
@@ -437,7 +437,7 @@ class AddStashDiagnosticsPanelv1(gtk.VBox):
             has_menu=True)
         self._view_button.connect("button-press-event",
                                   self._popup_view_menu)
-        filter_hbox = gtk.HBox()
+        filter_hbox = Gtk.HBox()
         filter_hbox.pack_start(group_label, expand=False, fill=False)
         filter_hbox.pack_start(self._group_widget, expand=False, fill=False)
         filter_hbox.pack_start(filter_label, expand=False, fill=False,
@@ -499,7 +499,7 @@ class AddStashDiagnosticsPanelv1(gtk.VBox):
         if pathinfo is not None:
             path, col = pathinfo[0:2]
             if event.button != 3:
-                if event.type == gtk.gdk._2BUTTON_PRESS:
+                if event.type == Gdk._2BUTTON_PRESS:
                     self._handle_activation(treeview, path, col)
             else:
                 self._popup_tree_menu(path, col, event)
@@ -531,14 +531,14 @@ class AddStashDiagnosticsPanelv1(gtk.VBox):
 
     def _popup_tree_menu(self, path, col, event):
         """Launch a menu for this main treeview row."""
-        menu = gtk.Menu()
+        menu = Gtk.Menu()
         menu.show()
         model = self._view.get_model()
         row_iter = model.get_iter(path)
         section, item = self._get_section_item_from_iter(row_iter)
         if section is None or item is None:
             return False
-        add_menuitem = gtk.ImageMenuItem(stock_id=gtk.STOCK_ADD)
+        add_menuitem = Gtk.ImageMenuItem(stock_id=Gtk.STOCK_ADD)
         add_menuitem.set_label("Add STASH request")
         add_menuitem.connect("activate",
                              lambda i: self.add_stash_request(section, item))
@@ -550,7 +550,7 @@ class AddStashDiagnosticsPanelv1(gtk.VBox):
             self.STASH_PARSE_DESC_OPT + "=" + str(stash_desc_value), {})
         desc_meta_help = desc_meta.get(rose.META_PROP_HELP)
         if desc_meta_help is not None:
-            help_menuitem = gtk.ImageMenuItem(stock_id=gtk.STOCK_HELP)
+            help_menuitem = Gtk.ImageMenuItem(stock_id=Gtk.STOCK_HELP)
             help_menuitem.set_label("Help")
             help_menuitem._help_text = desc_meta_help
             help_menuitem._help_title = "Help for %s" % stash_desc_value
@@ -559,15 +559,15 @@ class AddStashDiagnosticsPanelv1(gtk.VBox):
             menu.append(help_menuitem)
         streqs = list(self.request_lookup.get(section, {}).get(item, {}).keys())
         if streqs:
-            view_menuitem = gtk.ImageMenuItem(stock_id=gtk.STOCK_FIND)
+            view_menuitem = Gtk.ImageMenuItem(stock_id=Gtk.STOCK_FIND)
             view_menuitem.set_label(label="View...")
             view_menuitem.show()
-            view_menu = gtk.Menu()
+            view_menu = Gtk.Menu()
             view_menu.show()
             view_menuitem.set_submenu(view_menu)
             streqs.sort(rose.config.sort_settings)
             for streq in streqs:
-                view_streq_menuitem = gtk.MenuItem(label=streq)
+                view_streq_menuitem = Gtk.MenuItem(label=streq)
                 view_streq_menuitem._section = streq
                 view_streq_menuitem.connect(
                     "button-release-event",
@@ -580,8 +580,8 @@ class AddStashDiagnosticsPanelv1(gtk.VBox):
 
     def _popup_view_menu(self, widget, event):
         # Create a menu below the widget for view options.
-        menu = gtk.Menu()
-        meta_menuitem = gtk.CheckMenuItem(label="Show expanded value info")
+        menu = Gtk.Menu()
+        meta_menuitem = Gtk.CheckMenuItem(label="Show expanded value info")
         if len(self.column_names) == len(self._visible_metadata_columns):
             meta_menuitem.set_active(True)
         meta_menuitem.connect("toggled", self._toggle_show_more_info)
@@ -589,7 +589,7 @@ class AddStashDiagnosticsPanelv1(gtk.VBox):
         if not self.stash_meta_lookup:
             meta_menuitem.set_sensitive(False)
         menu.append(meta_menuitem)
-        col_title_menuitem = gtk.CheckMenuItem(
+        col_title_menuitem = Gtk.CheckMenuItem(
             label="Show expanded column titles")
         if self._should_show_meta_column_titles:
             col_title_menuitem.set_active(True)
@@ -599,12 +599,12 @@ class AddStashDiagnosticsPanelv1(gtk.VBox):
         if not self.stash_meta_lookup:
             col_title_menuitem.set_sensitive(False)
         menu.append(col_title_menuitem)
-        sep = gtk.SeparatorMenuItem()
+        sep = Gtk.SeparatorMenuItem()
         sep.show()
         menu.append(sep)
-        show_column_menuitem = gtk.MenuItem("Show/hide columns")
+        show_column_menuitem = Gtk.MenuItem("Show/hide columns")
         show_column_menuitem.show()
-        show_column_menu = gtk.Menu()
+        show_column_menu = Gtk.Menu()
         show_column_menuitem.set_submenu(show_column_menu)
         menu.append(show_column_menuitem)
         for i, column in enumerate(self._view.get_columns()):
@@ -615,7 +615,7 @@ class AddStashDiagnosticsPanelv1(gtk.VBox):
                 title = col_meta.get(rose.META_PROP_TITLE)
                 if title is not None:
                     col_title = title
-            col_menuitem = gtk.CheckMenuItem(label=col_title,
+            col_menuitem = Gtk.CheckMenuItem(label=col_title,
                                              use_underline=False)
             col_menuitem.show()
             col_menuitem.set_active(column.get_visible())
@@ -648,7 +648,7 @@ class AddStashDiagnosticsPanelv1(gtk.VBox):
         max_len = 36
         if value is not None and len(value) > max_len and col_index != 0:
             cell.set_property("width-chars", max_len)
-            cell.set_property("ellipsize", pango.ELLIPSIZE_END)
+            cell.set_property("ellipsize", Pango.EllipsizeMode.END)
         if col_index == 0 and treemodel.iter_parent(iter_) is not None:
             cell.set_property("visible", False)
         if value is not None and col_title != "?":
