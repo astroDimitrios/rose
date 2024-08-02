@@ -743,7 +743,7 @@ def load_override_config(sections, my_globals=None):
         conf = ResourceLocator.default().get_conf().get([section])
         if conf is None:
             continue
-        for key, node in conf.value.items():
+        for key, node in list(conf.value.items()):
             if node.is_ignored():
                 continue
             try:
@@ -752,7 +752,7 @@ def load_override_config(sections, my_globals=None):
                 cast_value = node.value
             name = key.replace("-", "_").upper()
             orig_value = my_globals[name]
-            if (type(orig_value) is not type(cast_value) and
+            if (not isinstance(orig_value, type(cast_value)) and
                     orig_value is not None):
                 sys.stderr.write(_OVERRIDE_WARNING_TYPE.format(
                     section, key, cast_value,
