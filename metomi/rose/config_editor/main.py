@@ -388,14 +388,6 @@ class MainController(object):
         add_icon = self.toolbar.item_dict.get(
             metomi.rose.config_editor.TOOLBAR_ADD)['widget']
         add_icon.connect('button_press_event', self.add_page_variable)
-        custom_text = metomi.rose.config_editor.TOOLBAR_SUITE_RUN_MENU
-        self._toolbar_run_button = metomi.rose.gtk.util.CustomMenuButton(
-            stock_id=Gtk.STOCK_MEDIA_PLAY,
-            menu_items=[(custom_text, Gtk.STOCK_MEDIA_PLAY)],
-            menu_funcs=[self.main_handle.get_run_suite_args],
-            tip_text=metomi.rose.config_editor.TOOLBAR_SUITE_RUN)
-        self._toolbar_run_button.connect("clicked", self.main_handle.run_suite)
-        self.toolbar.insert(self._toolbar_run_button, -1)
 
         self.toolbar.set_widget_sensitive(
             metomi.rose.config_editor.TOOLBAR_SUITE_GCONTROL,
@@ -1419,7 +1411,6 @@ class MainController(object):
         self._get_menu_widget('/Save').set_sensitive(is_changed)
         self._get_menu_widget('/Check and save').set_sensitive(is_changed)
         self._get_menu_widget('/Graph').set_sensitive(not is_changed)
-        self._toolbar_run_button.set_sensitive(not is_changed)
         self._get_menu_widget('/Run Suite custom').set_sensitive(
             not is_changed)
         self._get_menu_widget('/Run Suite default').set_sensitive(
