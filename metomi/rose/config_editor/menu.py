@@ -111,11 +111,6 @@ class MenuBar(object):
         <menuitem action="Autofix"/>
       </menu>
       <menu action="Tools">
-        <menu action="Run Suite">
-          <menuitem action="Run Suite default"/>
-          <menuitem action="Run Suite custom"/>
-        </menu>
-        <separator name="sep_run_action"/>
         <menuitem action="Browser"/>
         <menuitem action="Terminal"/>
         <menuitem action="View Output"/>
@@ -205,13 +200,6 @@ class MenuBar(object):
          metomi.rose.config_editor.TOP_MENU_METADATA_GRAPH),
         ('Tools', None,
          metomi.rose.config_editor.TOP_MENU_TOOLS),
-        ('Run Suite', Gtk.STOCK_MEDIA_PLAY,
-         metomi.rose.config_editor.TOP_MENU_TOOLS_SUITE_RUN),
-        ('Run Suite default', Gtk.STOCK_MEDIA_PLAY,
-         metomi.rose.config_editor.TOP_MENU_TOOLS_SUITE_RUN_DEFAULT,
-         metomi.rose.config_editor.ACCEL_SUITE_RUN),
-        ('Run Suite custom', Gtk.STOCK_EDIT,
-         metomi.rose.config_editor.TOP_MENU_TOOLS_SUITE_RUN_CUSTOM),
         ('Browser', Gtk.STOCK_DIRECTORY,
          metomi.rose.config_editor.TOP_MENU_TOOLS_BROWSER,
          metomi.rose.config_editor.ACCEL_BROWSER),
