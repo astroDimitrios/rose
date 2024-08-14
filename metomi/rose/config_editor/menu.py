@@ -119,7 +119,6 @@ class MenuBar(object):
         <menuitem action="Browser"/>
         <menuitem action="Terminal"/>
         <menuitem action="View Output"/>
-        <menuitem action="Open Suite GControl"/>
       </menu>
       <menu action="Page">
         <menuitem action="Add variable"/>
@@ -221,8 +220,6 @@ class MenuBar(object):
          metomi.rose.config_editor.ACCEL_TERMINAL),
         ('View Output', Gtk.STOCK_DIRECTORY,
          metomi.rose.config_editor.TOP_MENU_TOOLS_VIEW_OUTPUT),
-        ('Open Suite GControl', "rose-gtk-scheduler",
-         metomi.rose.config_editor.TOP_MENU_TOOLS_OPEN_SUITE_GCONTROL),
         ('Help', None,
          metomi.rose.config_editor.TOP_MENU_HELP),
         ('Documentation', Gtk.STOCK_HELP,

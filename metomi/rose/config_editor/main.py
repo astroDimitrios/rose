@@ -515,8 +515,6 @@ class MainController(object):
              lambda m: self.main_handle.launch_terminal()),
             ('/TopMenuBar/Tools/View Output',
              lambda m: self.main_handle.launch_output_viewer()),
-            ('/TopMenuBar/Tools/Open Suite GControl',
-             lambda m: self.main_handle.launch_scheduler()),
             ('/TopMenuBar/Page/Revert',
              lambda m: self.revert_to_saved_data()),
             ('/TopMenuBar/Page/Page Info',
