@@ -113,7 +113,6 @@ class MenuBar(object):
       <menu action="Tools">
         <menuitem action="Browser"/>
         <menuitem action="Terminal"/>
-        <menuitem action="View Output"/>
       </menu>
       <menu action="Page">
         <menuitem action="Add variable"/>
@@ -206,8 +205,6 @@ class MenuBar(object):
         ('Terminal', Gtk.STOCK_EXECUTE,
          metomi.rose.config_editor.TOP_MENU_TOOLS_TERMINAL,
          metomi.rose.config_editor.ACCEL_TERMINAL),
-        ('View Output', Gtk.STOCK_DIRECTORY,
-         metomi.rose.config_editor.TOP_MENU_TOOLS_VIEW_OUTPUT),
         ('Help', None,
          metomi.rose.config_editor.TOP_MENU_HELP),
         ('Documentation', Gtk.STOCK_HELP,
