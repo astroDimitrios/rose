@@ -347,8 +347,8 @@ class MainController(object):
                  'Gtk.STOCK_DIALOG_QUESTION'),
                 (metomi.rose.config_editor.TOOLBAR_TRANSFORM,
                  'Gtk.STOCK_CONVERT'),
-                (metomi.rose.config_editor.TOOLBAR_VIEW_OUTPUT,
-                 'Gtk.STOCK_DIRECTORY'),
+                #(metomi.rose.config_editor.TOOLBAR_VIEW_OUTPUT,
+                # 'Gtk.STOCK_DIRECTORY'),
             ],
             sep_on_name=[
                 metomi.rose.config_editor.TOOLBAR_CHECK_AND_SAVE,
@@ -375,8 +375,8 @@ class MainController(object):
                self.main_handle.check_all_extra)
         assign(metomi.rose.config_editor.TOOLBAR_TRANSFORM,
                self.main_handle.transform_default)
-        assign(metomi.rose.config_editor.TOOLBAR_VIEW_OUTPUT,
-               self.main_handle.launch_output_viewer)
+        #assign(metomi.rose.config_editor.TOOLBAR_VIEW_OUTPUT,
+        #       self.main_handle.launch_output_viewer)
         self.find_entry = self.toolbar.item_dict.get(
             metomi.rose.config_editor.TOOLBAR_FIND)['widget']
         self.find_entry.connect("activate", self._launch_find)
@@ -385,10 +385,10 @@ class MainController(object):
             metomi.rose.config_editor.TOOLBAR_ADD)['widget']
         add_icon.connect('button_press_event', self.add_page_variable)
 
-        self.toolbar.set_widget_sensitive(
-            metomi.rose.config_editor.TOOLBAR_VIEW_OUTPUT,
-            any(c.config_type == metomi.rose.TOP_CONFIG_NAME
-                for c in list(self.data.config.values())))
+        #self.toolbar.set_widget_sensitive(
+        #    metomi.rose.config_editor.TOOLBAR_VIEW_OUTPUT,
+        #    any(c.config_type == metomi.rose.TOP_CONFIG_NAME
+        #        for c in list(self.data.config.values())))
 
     def generate_menubar(self):
         """Link in the menu functionality and accelerators."""
