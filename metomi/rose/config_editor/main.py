@@ -591,8 +591,6 @@ class MainController(object):
             self.main_handle.destroy,
             metomi.rose.config_editor.ACCEL_METADATA_REFRESH:
             self._refresh_metadata_if_on,
-            #metomi.rose.config_editor.ACCEL_SUITE_RUN:
-            #self.main_handle.run_suite,
             metomi.rose.config_editor.ACCEL_BROWSER:
             self.main_handle.launch_browser,
             metomi.rose.config_editor.ACCEL_TERMINAL:
