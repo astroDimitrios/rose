@@ -855,7 +855,7 @@ class BaseStashSummaryDataPanelv1(
                          lambda i: self._packages_enable(disable=True))
         menuitem.show()
         menu.append(menuitem)
-        menu.popup(None, None, widget.position_menu, event.button,
+        menu.gtk_menu_popup_at_widget(None, None, widget.position_menu, event.button,
                    event.time, widget)
 
     def _packages_remove(self, only_this_package=None):

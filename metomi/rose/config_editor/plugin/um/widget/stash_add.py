@@ -593,7 +593,7 @@ class AddStashDiagnosticsPanelv1(Gtk.Box):
                 view_streq_menuitem.show()
                 view_menu.append(view_streq_menuitem)
             menu.append(view_menuitem)
-        menu.popup(None, None, None, event.button, event.time)
+        menu.gtk_menu_popup_at_widget(None, None, None, event.button, event.time)
         return False
 
     def _popup_view_menu(self, widget, event):
@@ -642,7 +642,7 @@ class AddStashDiagnosticsPanelv1(Gtk.Box):
                 "toggled",
                 lambda c: self._toggle_show_column_name(*c._connect_args))
             show_column_menu.append(col_menuitem)
-        menu.popup(None, None, widget.position_menu, event.button,
+        menu.gtk_menu_popup_at_widget(None, None, widget.position_menu, event.button,
                    event.time, widget)
 
     def _set_tree_cell_value(self, column, cell, treemodel, iter_):

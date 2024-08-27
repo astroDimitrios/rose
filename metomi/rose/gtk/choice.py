@@ -189,7 +189,7 @@ class ChoicesListView(Gtk.TreeView):
                 lambda b, e: self._handle_reordering()
             )
             menu.append(menuitem)
-        menu.popup(None, None, None, event.button, event.time)
+        menu.gtk_menu_popup_at_widget(None, None, None, event.button, event.time)
         return False
 
     def _remove_iter(self, iter_):
