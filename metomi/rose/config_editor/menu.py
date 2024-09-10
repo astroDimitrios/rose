@@ -39,8 +39,6 @@ import metomi.rose.gtk.run
 import metomi.rose.macro
 import metomi.rose.macros
 import metomi.rose.popen
-# import metomi.rose.suite_control
-# import metomi.rose.suite_engine_proc
 
 from functools import cmp_to_key
 
@@ -189,11 +187,11 @@ class MenuBar(object):
          metomi.rose.config_editor.TOP_MENU_METADATA_PREFERENCES),
         ('Upgrade', Gtk.STOCK_GO_UP,
          metomi.rose.config_editor.TOP_MENU_METADATA_UPGRADE),
-        ('All V', Gtk.STOCK_DIALOG_QUESTION,
+        ('All V', "dialog-question",
          metomi.rose.config_editor.TOP_MENU_METADATA_MACRO_ALL_V),
         ('Autofix', Gtk.STOCK_CONVERT,
          metomi.rose.config_editor.TOP_MENU_METADATA_MACRO_AUTOFIX),
-        ('Extra checks', Gtk.STOCK_DIALOG_QUESTION,
+        ('Extra checks', "dialog-question",
          metomi.rose.config_editor.TOP_MENU_METADATA_CHECK),
         ('Graph', Gtk.STOCK_SORT_ASCENDING,
          metomi.rose.config_editor.TOP_MENU_METADATA_GRAPH),
@@ -301,25 +299,27 @@ class MenuBar(object):
             self.macro_ids.append(self.uimanager.add_ui_from_string(new_ui))
             config_item = self.uimanager.get_widget(config_address)
             if image_path is not None:
-                image = Gtk.image_new_from_file(image_path)
+                image = Gtk.Image.new_from_file(image_path)
                 config_item.set_image(image)
         if config_item.get_submenu() is None:
             config_item.set_submenu(Gtk.Menu())
         macro_fullname = ".".join([modulename, classname, methodname])
-        macro_fullname = macro_fullname.replace("_", "__")
+        macro_fullname = macro_fullname.replace("__", "_")
         if methodname == metomi.rose.macro.VALIDATE_METHOD:
-            stock_id = Gtk.STOCK_DIALOG_QUESTION
+            stock_id = "dialog-question"
         else:
             stock_id = Gtk.STOCK_CONVERT
-        macro_item_box = Gtk.Box()
+        macro_item_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
         macro_item_icon = Gtk.Image.new_from_icon_name(stock_id, Gtk.IconSize.MENU)
         macro_item_label = Gtk.Label(label=macro_fullname)
         macro_item = Gtk.MenuItem()
-        macro_item_box.pack_start(macro_item_icon, False, False, 0)
-        macro_item_box.pack_start(macro_item_label, False, False, 0)
+        Gtk.Container.add(macro_item_box, macro_item_icon)
+        Gtk.Container.add(macro_item_box, macro_item_label)
         Gtk.Container.add(macro_item, macro_item_box)
         macro_item.set_tooltip_text(help_)
-        macro_item.show()
+        context = Gtk.Widget.get_style_context(macro_item)
+        Gtk.StyleContext.add_class(context, "macro-item")
+        macro_item.show_all()
         macro_item._run_data = [config_name, modulename, classname,
                                 methodname]
         macro_item.connect("activate",
@@ -329,17 +329,17 @@ class MenuBar(object):
             for item in config_item.get_submenu().get_children():
                 if hasattr(item, "_rose_all_validators"):
                     return False
-            all_item_box = Gtk.Box()
-            all_item_icon = Gtk.Image.new_from_icon_name(Gtk.STOCK_DIALOG_QUESTION, Gtk.IconSize.MENU)
+            all_item_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+            all_item_icon = Gtk.Image.new_from_icon_name("dialog-question", Gtk.IconSize.MENU)
             all_item_label = Gtk.Label(label=metomi.rose.config_editor.MACRO_MENU_ALL_VALIDATORS)
             all_item = Gtk.MenuItem()
-            all_item_box.pack_start(all_item_icon, False, False, 0)
-            all_item_box.pack_start(all_item_label, False, False, 0)
-            Gtk.Container.add(macro_item, macro_item_box)
+            Gtk.Container.add(all_item_box, all_item_icon)
+            Gtk.Container.add(all_item_box, all_item_label)
+            Gtk.Container.add(all_item, all_item_box)
             all_item._rose_all_validators = True
             all_item.set_tooltip_text(
                 metomi.rose.config_editor.MACRO_MENU_ALL_VALIDATORS_TIP)
-            all_item.show()
+            all_item.show_all()
             all_item._run_data = [config_name, None, None, methodname]
             all_item.connect("activate",
                              lambda i: run_macro(*i._run_data))
@@ -591,7 +591,6 @@ class MainMenuHandler(object):
         response = dialog.run()
         if response == Gtk.ResponseType.CANCEL or response == Gtk.ResponseType.CLOSE:
             res = optionals
-            dialog.destroy()
         else:
             res = {}
             for key, box in list(entries.items()):
@@ -709,7 +708,7 @@ class MainMenuHandler(object):
                 macro_config, change_list = return_value
                 if not change_list:
                     continue
-                change_list.sort(lambda x, y: sorter(to_id(x), to_id(y)))
+                change_list.sort(key=cmp_to_key(lambda x, y: sorter(to_id(x), to_id(y))))
                 num_changes = len(change_list)
                 self.handle_macro_transforms(config_name, macro_fullname,
                                              macro_config, change_list)
@@ -1013,7 +1012,7 @@ class MainMenuHandler(object):
             meta_config = self.data.config[config_name].meta
             macro = metomi.rose.macros.DefaultTransforms()
             change_list = macro.transform(macro_config, meta_config)[1]
-            change_list.sort(lambda x, y: sorter(to_id(x), to_id(y)))
+            change_list.sort(key=cmp_to_key(lambda x, y: sorter(to_id(x), to_id(y))))
             self.handle_macro_transforms(
                 config_name, "Autofixer.transform",
                 macro_config, change_list, triggers_ok=True)

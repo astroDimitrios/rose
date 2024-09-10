@@ -2,6 +2,21 @@ entry {
     background-color: coral;
 }
 
+/* Add padding in-between env cogs and the variable title on pages */
+button > widget > box > image {
+    padding-right: 10px;
+}
+
+popover > box > button > box > image {
+    padding-right: 10px;
+}
+
+/* Add an outline to indicate focus when navigating using internal links */
+notebook button:focus {
+    outline-style: dashed;
+    outline-color: gray;
+}
+
 /* Fix the close button for tab page labels */
 #page-tab-button {
     border: None;
@@ -11,4 +26,10 @@ entry {
 #page-tab-button:hover {
     background-image: None;
     box-shadow: None;
+}
+
+#macro-button {
+    padding: 5px;
+    margin-top: 10px;
+    margin-left: 10px;
 }

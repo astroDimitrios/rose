@@ -24,7 +24,7 @@ import webbrowser
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
+from gi.repository import Gtk, Gdk
 from gi.repository import Pango
 
 import metomi.rose.config_editor.panelwidget
@@ -377,11 +377,11 @@ class ConfigPage(Gtk.Box):
 
     def update_info(self):
         """Driver routine to update non-variable information."""
-        button_list, label_list, _ = self._get_page_info_widgets()
+        button_list, label_list, info = self._get_page_info_widgets()
         if [l.get_text() for l in label_list] == self._last_info_labels:
             # No change - do not redraw.
             return False
-        self.generate_page_info(button_list, label_list)
+        self.generate_page_info(button_list, label_list, info)
         has_content = (self.info_panel.get_children() and
                        self.info_panel.get_children()[0].get_children())
         if self.info_panel in self.main_vpaned.get_children():
@@ -465,8 +465,8 @@ class ConfigPage(Gtk.Box):
             metadata_files = self.section_ops.get_ns_metadata_files(
                 self.namespace)
             widget_dir = metomi.rose.META_DIR_WIDGET
-            metadata_files.sort(
-                lambda x, y: (widget_dir in y) - (widget_dir in x))
+            metadata_files.sort(key=cmp_to_key(
+                lambda x, y: (widget_dir in y) - (widget_dir in x)))
             prefix = re.sub(r"[^\w]", "_", self.config_name.strip("/"))
             prefix += "/" + metomi.rose.META_DIR_WIDGET + "/"
             custom_widget = metomi.rose.resource.import_object(
@@ -1048,19 +1048,20 @@ class ConfigPage(Gtk.Box):
             datavars[i] = datum[4]  # variable
         return True
 
-    def _macro_menu_launch(self, widget, event):
-        # Create a menu below the widget for macro actions.
-        menu = Gtk.Menu()
+    def _macro_menu_launch(self):
+        # Create the popover menu below the widget for macro actions.
+        self.popover = Gtk.Popover()
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         for macro_name, info in sorted(self.custom_macros.items()):
             method, description = info
             if method == metomi.rose.macro.TRANSFORM_METHOD:
                 stock_id = Gtk.STOCK_CONVERT
             else:
-                stock_id = Gtk.STOCK_DIALOG_QUESTION
+                stock_id = "dialog-question"
             macro_menuitem_box = Gtk.Box()
             macro_menuitem_icon = Gtk.Image.new_from_icon_name(stock_id, Gtk.IconSize.MENU)
             macro_menuitem_label = Gtk.Label(label=macro_name)
-            macro_menuitem = Gtk.MenuItem()
+            macro_menuitem = Gtk.Button()
             macro_menuitem_box.pack_start(macro_menuitem_icon, False, False, 0)
             macro_menuitem_box.pack_start(macro_menuitem_label, False, False, 0)
             Gtk.Container.add(macro_menuitem, macro_menuitem_box)
@@ -1068,11 +1069,15 @@ class ConfigPage(Gtk.Box):
             macro_menuitem.show()
             macro_menuitem._macro = macro_name
             macro_menuitem.connect(
-                "button-release-event",
-                lambda m, e: self.launch_macro(m._macro))
-            menu.append(macro_menuitem)
-        menu.gtk_menu_popup_at_widget(widget, None, None, event)
-
+                "clicked",
+                lambda m: self.launch_macro(m._macro))
+            macro_menuitem.set_relief(Gtk.ReliefStyle.NONE)
+            macro_menuitem.connect("leave", lambda b: b.set_relief(Gtk.ReliefStyle.NONE))
+            vbox.pack_start(macro_menuitem, False, True, 10)
+        vbox.show_all()
+        self.popover.add(vbox)
+        self.popover.set_position(Gtk.PositionType.BOTTOM)
+        
     def launch_macro(self, macro_name_string):
         """Launch a macro, if possible."""
         class_name = None
@@ -1180,16 +1185,19 @@ class ConfigPage(Gtk.Box):
                 button_list.append(error_button)
                 label_list.append(error_label)
         if list(self.custom_macros.items()):
-            macro_button = metomi.rose.gtk.util.CustomButton(
+            self._macro_menu_launch()
+            macro_button_icon = Gtk.Image.new_from_icon_name("system-run", Gtk.IconSize.MENU)
+            macro_label = Gtk.Label(label=metomi.rose.config_editor.LABEL_PAGE_MACRO_BUTTON)
+            macro_button = Gtk.MenuButton(
+                image=macro_button_icon,
                 label=metomi.rose.config_editor.LABEL_PAGE_MACRO_BUTTON,
-                stock_id=Gtk.STOCK_EXECUTE,
-                tip_text=metomi.rose.config_editor.TIP_MACRO_RUN_PAGE,
-                as_tool=True, icon_at_start=True,
-                has_menu=True)
-            macro_button.connect("button-press-event",
-                                 self._macro_menu_launch)
-            macro_label = Gtk.Label()
-            macro_label.show()
+                popover=self.popover,
+            )
+            macro_button.set_relief(Gtk.ReliefStyle.NONE)
+            macro_button.connect("leave", lambda b: b.set_relief(Gtk.ReliefStyle.NONE))
+            macro_button.show()
+            Gtk.Widget.set_name(macro_button, "macro-button")
+
             button_list.append(macro_button)
             label_list.append(macro_label)
         return button_list, label_list, info
