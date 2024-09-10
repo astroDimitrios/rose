@@ -1071,8 +1071,7 @@ class ConfigPage(Gtk.Box):
                 "button-release-event",
                 lambda m, e: self.launch_macro(m._macro))
             menu.append(macro_menuitem)
-        menu.gtk_menu_popup_at_widget(None, None, widget.position_menu, event.button,
-                   event.time, widget)
+        menu.gtk_menu_popup_at_widget(widget, None, None, event)
 
     def launch_macro(self, macro_name_string):
         """Launch a macro, if possible."""

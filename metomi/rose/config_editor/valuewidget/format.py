@@ -68,7 +68,7 @@ class FormatsChooserValueWidget(Gtk.Box):
         self.data_chooser.show()
         image_event.connect('button-press-event',
                             lambda i, w: (self.load_data_chooser() and
-                                          self.data_chooser.gtk_menu_popup_at_widget()))
+                                          self.data_chooser.popup()))
         self.add_box.pack_start(self.data_chooser, expand=False, fill=False,
                                 padding=0)
 
