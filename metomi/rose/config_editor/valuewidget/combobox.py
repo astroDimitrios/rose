@@ -38,9 +38,6 @@ class ComboBoxValueWidget(Gtk.Box):
     def __init__(self, value, metadata, set_value, hook, arg_str=None):
         super(ComboBoxValueWidget, self).__init__(homogeneous=False,
                                                   spacing=0)
-        print("VALUE = ", value)
-        print("Metadata = ", metadata)
-        print("SET_VALUE = ", set_value)
         self.value = value
         self.metadata = metadata
         self.set_value = set_value
