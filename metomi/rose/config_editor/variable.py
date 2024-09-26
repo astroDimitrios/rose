@@ -250,7 +250,7 @@ class VariableWidget(object):
             container.attach(self.contentwidget,
                              key_col + 1, key_col + 2,
                              row_index, row_index + 1,
-                             xpadding=5, ypadding=5,
+                             xpadding=5,
                              xoptions=Gtk.AttachOptions.EXPAND | Gtk.AttachOptions.FILL,
                              yoptions=self.yoptions)
             self.valuewidget.trigger_scroll = (
