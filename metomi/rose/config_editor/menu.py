@@ -36,7 +36,6 @@ import metomi.rose.config_editor
 import metomi.rose.config_editor.upgrade_controller
 import metomi.rose.external
 import metomi.rose.gtk.dialog
-import metomi.rose.gtk.run
 import metomi.rose.macro
 import metomi.rose.macros
 import metomi.rose.popen
@@ -1251,34 +1250,6 @@ class MainMenuHandler(object):
                 ),
                 metomi.rose.config_editor.DIALOG_TITLE_ERROR,
             )
-
-    def get_run_suite_args(self, *args):
-        """Ask the user for custom arguments to suite run."""
-        help_cmds = shlex.split(
-            metomi.rose.config_editor.LAUNCH_SUITE_RUN_HELP
-        )
-        help_text = subprocess.Popen(
-            help_cmds, stdout=subprocess.PIPE
-        ).communicate()[0]
-        metomi.rose.gtk.dialog.run_command_arg_dialog(
-            metomi.rose.config_editor.LAUNCH_SUITE_RUN,
-            help_text,
-            self.run_suite_check_args,
-        )
-
-    def run_suite_check_args(self, args):
-        if args is None:
-            return False
-        self.run_suite(args)
-
-    def run_suite(self, args=None, **kwargs):
-        """Run the suite, if possible."""
-        if not isinstance(args, list):
-            args = []
-        for key, value in list(kwargs.items()):
-            args.extend([key, value])
-        metomi.rose.gtk.run.run_suite(*args)
-        return False
 
     def transform_default(self, only_this_config=None):
         """Run the Rose built-in transformer macros."""
