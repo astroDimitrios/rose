@@ -1202,32 +1202,6 @@ class MainMenuHandler(object):
         except metomi.rose.popen.RosePopenError as exc:
             metomi.rose.gtk.dialog.run_exception_dialog(exc)
 
-    def launch_scheduler(self, *args):
-        """Run the scheduler for a suite open in config edit."""
-        this_id = self.data.top_level_name
-        scontrol = metomi.rose.suite_control.SuiteControl()
-        if scontrol.suite_engine_proc.is_suite_registered(this_id):
-            try:
-                return scontrol.gcontrol(this_id)
-            except metomi.rose.suite_control.SuiteNotRunningError as err:
-                msg = metomi.rose.config_editor.DIALOG_TEXT_SUITE_NOT_RUNNING.format(
-                    str(err)
-                )
-                return metomi.rose.gtk.dialog.run_dialog(
-                    metomi.rose.gtk.dialog.DIALOG_TYPE_ERROR,
-                    msg,
-                    metomi.rose.config_editor.DIALOG_TITLE_SUITE_NOT_RUNNING,
-                )
-        else:
-            msg = metomi.rose.config_editor.DIALOG_TEXT_UNREGISTERED_SUITE.format(
-                this_id
-            )
-            return metomi.rose.gtk.dialog.run_dialog(
-                metomi.rose.gtk.dialog.DIALOG_TYPE_ERROR,
-                msg,
-                metomi.rose.config_editor.DIALOG_TITLE_UNREGISTERED_SUITE,
-            )
-
     def launch_terminal(self):
         # Handle a launch terminal request.
         try:
