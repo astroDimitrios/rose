@@ -33,6 +33,8 @@ import metomi.rose.config_editor.util
 import metomi.rose.gtk.util
 import metomi.rose.resource
 
+import time
+
 from functools import cmp_to_key
 
 
