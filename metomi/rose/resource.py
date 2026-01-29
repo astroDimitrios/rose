@@ -72,8 +72,6 @@ class ResourceLocator:
     @classmethod
     def default(cls, paths=None, reset=False):
         """Return the default resource locator."""
-        if paths is not None:
-            breakpoint(header=f'{paths}')
         if cls._DEFAULT_RESOURCE_LOCATOR is None or reset:
             cls._DEFAULT_RESOURCE_LOCATOR = ResourceLocator(paths)
         return cls._DEFAULT_RESOURCE_LOCATOR
